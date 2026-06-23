@@ -1,3 +1,28 @@
 /skills
-/node_modules
-/apps/server/node_modules
+node_modules/
+
+# Environment — never commit
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+.next/
+out/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Testing
+coverage/
+
+# TypeScript
+*.tsbuildinfo
