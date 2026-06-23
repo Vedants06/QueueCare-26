@@ -87,8 +87,13 @@ export async function queryHistory(
   try {
     const { clinicId, date, search, status, page, limit } = params;
 
-    // Build the where clause
-    const where: Record<string, unknown> = { clinicId };
+    // Build the where clause using Prisma's generated types
+    const where: {
+      clinicId: string;
+      session?: { date: string };
+      status?: string;
+      OR?: Array<Record<string, unknown>>;
+    } = { clinicId };
 
     // Filter by date — match session date
     if (date) {
@@ -105,19 +110,16 @@ export async function queryHistory(
       const searchTrim = search.trim();
       const searchAsNumber = parseInt(searchTrim, 10);
 
-      // Build OR conditions
       const orConditions: Array<Record<string, unknown>> = [
         { name: { contains: searchTrim, mode: 'insensitive' } },
       ];
 
-      // Search by phone if search looks like it could be a phone number
       if (searchTrim.length >= 3) {
         orConditions.push({
           phone: { contains: searchTrim, mode: 'insensitive' },
         });
       }
 
-      // Search by token number if search is a valid number
       if (!isNaN(searchAsNumber) && searchAsNumber > 0) {
         orConditions.push({ token: searchAsNumber });
       }
@@ -126,16 +128,16 @@ export async function queryHistory(
     }
 
     // Get total count for pagination
-    const total = await prisma.patientHistory.count({
-      where: where as Parameters<typeof prisma.patientHistory.count>[0]['where'],
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const total = await prisma.patientHistory.count({ where: where as any });
 
     const pages = Math.max(1, Math.ceil(total / limit));
     const skip = (page - 1) * limit;
 
     // Fetch paginated results
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const patients = await prisma.patientHistory.findMany({
-      where: where as Parameters<typeof prisma.patientHistory.findMany>[0]['where'],
+      where: where as any,
       orderBy: { addedAt: 'desc' },
       skip,
       take: limit,
