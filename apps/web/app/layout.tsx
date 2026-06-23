@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'QueueCure',
-  description: 'Real-time clinic queue management',
+  description: 'Real-time clinic queue management — replace paper tokens with live digital queues',
 };
 
 export default function RootLayout({
