@@ -50,12 +50,14 @@ function DisplayPageContent() {
     };
   }, [socket]);
 
-  // Hide cursor for kiosk mode
+  // Hide cursor for kiosk mode (only in production)
   useEffect(() => {
-    document.body.style.cursor = 'none';
-    return () => {
-      document.body.style.cursor = '';
-    };
+    if (process.env.NODE_ENV === 'production') {
+      document.body.style.cursor = 'none';
+      return () => {
+        document.body.style.cursor = '';
+      };
+    }
   }, []);
 
   const isMinimal = mode === 'minimal';
