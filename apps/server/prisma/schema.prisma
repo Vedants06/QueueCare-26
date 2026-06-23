@@ -3,11 +3,79 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
+// generator client {
+//   provider = "prisma-client"
+//   output   = "../generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+// }
+
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PatientHistory {
+  id            String    @id @default(cuid())
+  clinicId      String
+  token         Int
+  name          String
+  phone         String?
+  priority      Boolean   @default(false)
+  status        String    // 'done' | 'skipped' | 'absent'
+  addedAt       DateTime
+  calledAt      DateTime?
+  doneAt        DateTime?
+  absentAt      DateTime?
+  reinstatedAt  DateTime?
+  absentCount   Int       @default(0)
+  duration      Float?
+  sessionId     String
+  createdAt     DateTime  @default(now())
+
+  session       ClinicSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, addedAt])
+  @@index([clinicId, createdAt])
+  @@index([phone])
+  @@index([token, clinicId])
+  @@index([status])
+  @@index([sessionId])
+}
+
+model ConsultHistory {
+  id          String    @id @default(cuid())
+  clinicId    String
+  duration    Float
+  isOutlier   Boolean   @default(false)
+  recordedAt  DateTime  @default(now())
+  sessionId   String
+
+  session     ClinicSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, recordedAt])
+  @@index([clinicId, isOutlier])
+  @@index([sessionId])
+}
+
+model ClinicSession {
+  id              String    @id @default(cuid())
+  clinicId        String
+  startedAt       DateTime  @default(now())
+  date            String
+  avgConsultTime  Float     @default(10)
+  isActive        Boolean   @default(true)
+
+  patients        PatientHistory[]
+  consultations   ConsultHistory[]
+
+  @@index([clinicId, date])
+  @@index([clinicId, isActive])
+  @@index([isActive])
 }
