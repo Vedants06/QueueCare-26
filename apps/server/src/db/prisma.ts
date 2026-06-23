@@ -1,6 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { console } from 'inspector/promises';
-import process from 'process';
 
 const globalForPrisma = globalThis as {
   prisma?: PrismaClient;
@@ -17,16 +15,15 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export async function connectDatabase(): Promise<void> {
-  try {
-    await prisma.$connect();
-    console.log('[DB] PostgreSQL connected successfully');
-  } catch (error) {
-    console.error('[DB] Failed to connect to PostgreSQL:', error);
-    process.exit(1);
-  }
+  await prisma.$connect();
+  console.log('[DB] PostgreSQL connected successfully');
 }
 
 export async function disconnectDatabase(): Promise<void> {
-  await prisma.$disconnect();
-  console.log('[DB] PostgreSQL disconnected');
+  try {
+    await prisma.$disconnect();
+    console.log('[DB] PostgreSQL disconnected');
+  } catch (error) {
+    console.error('[DB] Error while disconnecting PostgreSQL:', error);
+  }
 }
