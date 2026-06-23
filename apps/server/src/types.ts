@@ -1,0 +1,40 @@
+// Re-export all shared types
+// This file exists because TypeScript path aliases across
+// workspaces are fragile without Turborepo or project references.
+// Single import point for the entire server codebase.
+
+export type {
+  PatientStatus,
+  Patient,
+  QueueState,
+  WaitEstimate,
+  AnalyticsData,
+  PinAuthState,
+  SocketErrorCode,
+  QueueError,
+  JoinClinicPayload,
+  AddPatientPayload,
+  CallNextPayload,
+  MarkDonePayload,
+  MarkAbsentPayload,
+  ReinstatePayload,
+  SkipTokenPayload,
+  UndoCallPayload,
+  RecallTokenPayload,
+  PauseQueuePayload,
+  ResetQueuePayload,
+  SetAvgTimePayload,
+  TokenCalledPayload,
+  PatientAddedPayload,
+  PatientReinstatedPayload,
+  DuplicateWarningPayload,
+  MarkDoneSuccessPayload,
+  RecallSuccessPayload,
+  QueuePausedPayload,
+  QueueResetPayload,
+  ConsultationWarningPayload,
+  PriorityAlertPayload,
+  QueueUpdatePayload,
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from '../../../shared/types';
