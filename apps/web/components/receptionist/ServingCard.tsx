@@ -15,16 +15,18 @@ interface ServingCardProps {
 }
 
 export function ServingCard({ patient, socket, clinicId, getPin, className }: ServingCardProps) {
-  const { formatted: elapsed } = useStopwatch(patient?.calledAt);
+  // Only show stopwatch for actively serving patient
+  const activePatient = patient?.status === 'serving' ? patient : null;
+  const { formatted: elapsed } = useStopwatch(activePatient?.calledAt);
 
-  if (!patient) {
+  if (!activePatient) {
     return (
       <div className={cn('qc-card text-center', className)}>
         <p className="text-sm text-text-muted">
           No patient currently being served
         </p>
         <p className="text-xs text-text-muted mt-1">
-          Click "Call Next" to begin
+          Click &quot;Call Next&quot; to begin
         </p>
       </div>
     );
@@ -33,7 +35,7 @@ export function ServingCard({ patient, socket, clinicId, getPin, className }: Se
   const handleMarkDone = () => {
     socket.emit('mark-done', {
       clinicId,
-      token: patient.token,
+      token: activePatient.token,
       receptionistPin: getPin(),
     });
   };
@@ -41,7 +43,7 @@ export function ServingCard({ patient, socket, clinicId, getPin, className }: Se
   const handleMarkAbsent = () => {
     socket.emit('mark-absent', {
       clinicId,
-      token: patient.token,
+      token: activePatient.token,
       receptionistPin: getPin(),
     });
   };
@@ -61,10 +63,10 @@ export function ServingCard({ patient, socket, clinicId, getPin, className }: Se
 
       <div className="flex items-center justify-between mb-3">
         <div>
-          <TokenDisplay token={patient.token} size="md" />
-          <p className="text-sm font-medium text-charcoal mt-1">{patient.name}</p>
-          {patient.phone && (
-            <p className="text-xs text-text-muted">{patient.phone}</p>
+          <TokenDisplay token={activePatient.token} size="md" />
+          <p className="text-sm font-medium text-charcoal mt-1">{activePatient.name}</p>
+          {activePatient.phone && (
+            <p className="text-xs text-text-muted">{activePatient.phone}</p>
           )}
         </div>
 
