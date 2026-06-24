@@ -26,6 +26,7 @@ export async function writePatientHistory(
         token: patient.token,
         name: patient.name,
         phone: patient.phone ?? null,
+        accessToken: patient.accessToken ?? null,
         priority: patient.priority,
         status,
         addedAt: new Date(patient.addedAt),
@@ -66,6 +67,7 @@ export interface HistoryQueryResult {
     token: number;
     name: string;
     phone: string | null;
+    accessToken: string | null;
     priority: boolean;
     status: string;
     addedAt: Date;

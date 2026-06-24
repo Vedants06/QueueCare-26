@@ -38,7 +38,7 @@ export function QRModal({ socket, className }: QRModalProps) {
       return;
     }
 
-    const url = `${APP_URL}/patient?token=${patient.token}&clinic=${patient.clinicId}`;
+    const url = `${APP_URL}/patient?token=${patient.token}&clinic=${patient.clinicId}&access=${patient.accessToken}`;
 
     QRCode.toString(url, {
       type: 'svg',

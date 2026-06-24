@@ -22,9 +22,11 @@ function PatientPageContent() {
   const searchParams = useSearchParams();
   const tokenParam = searchParams.get('token');
   const clinicParam = searchParams.get('clinic') || 'default';
+  const accessParam = searchParams.get('access');
 
   const token = tokenParam ? parseInt(tokenParam, 10) : null;
   const clinicId = clinicParam;
+  const accessToken = accessParam;
 
   const { socket, isConnected, lastUpdated, updateTimestamp } = useSocket(clinicId);
   const { state, findPatient, getPatientPosition, getWaitEstimate } = useQueueState(socket);
@@ -57,7 +59,13 @@ function PatientPageContent() {
     };
   }, [socket, token]);
 
-  const patient = token ? findPatient(token) : null;
+  // Look up patient AND verify their accessToken matches
+  const rawPatient = token ? findPatient(token) : null;
+  const patient =
+    rawPatient && accessToken && rawPatient.accessToken === accessToken
+      ? rawPatient
+      : null;
+  const isAccessDenied = !!rawPatient && !patient; // patient exists but access denied
   const position = token ? getPatientPosition(token) : 0;
   const waitEstimate = token ? getWaitEstimate(token) : null;
 
@@ -79,6 +87,25 @@ function PatientPageContent() {
           <p className="text-sm font-semibold text-charcoal mb-2">No token provided</p>
           <p className="text-xs text-charcoal/55">
             Scan the QR code from your token slip to track your queue position.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAccessDenied) {
+    return (
+      <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center p-4">
+        <div className="rounded-xl bg-white border border-signal-red-200 p-6 max-w-sm text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Image src="/QueueCureLogo.png" alt="" width={32} height={32} className="h-8 w-8" />
+            <span className="text-lg font-semibold text-charcoal">QueueCure</span>
+          </div>
+          <p className="text-sm font-semibold text-signal-red-700 mb-2">
+            Access denied
+          </p>
+          <p className="text-xs text-charcoal/55">
+            This link is invalid or has expired. Please scan the QR code from your token slip.
           </p>
         </div>
       </div>
@@ -127,7 +154,7 @@ function PatientPageContent() {
 
             {patient?.status === 'absent' && <AbsentNotice />}
 
-                        {/* You're next — when position is 1 and someone is currently being served */}
+            {/* You're next — when position is 1 and someone is currently being served */}
             {patient?.status === 'waiting' && position === 1 && state.currentToken !== null && (
               <div className="rounded-xl bg-charcoal text-white p-5 text-center">
                 <p className="text-base font-semibold mb-1">

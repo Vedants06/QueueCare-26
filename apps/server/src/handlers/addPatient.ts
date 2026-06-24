@@ -14,6 +14,16 @@ import { startTimer } from '../lib/consultationTimer';
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
 
+function generateAccessToken(): string {
+  // 16-char alphanumeric token. Random enough that brute force is impractical.
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no confusing 0/O/1/I
+  let token = '';
+  for (let i = 0; i < 16; i++) {
+    token += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return token;
+}
+
 /**
  * Handles 'add-patient' socket event.
  *
@@ -90,6 +100,7 @@ export async function handleAddPatient(
     status: 'waiting',
     addedAt: Date.now(),
     absentCount: 0,
+    accessToken: generateAccessToken(), 
   };
 
   // Step 5: Add to queue and apply priority sort
