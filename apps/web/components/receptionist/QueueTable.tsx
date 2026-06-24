@@ -12,6 +12,7 @@ interface QueueTableProps {
   socket: TypedSocket;
   clinicId: string;
   getPin: () => string;
+  onShowQR?: (patient: Patient) => void;
   className?: string;
 }
 
@@ -30,6 +31,7 @@ export function QueueTable({
   socket,
   clinicId,
   getPin,
+  onShowQR,
   className,
 }: QueueTableProps) {
   const [showCompleted, setShowCompleted] = useState(false);
@@ -104,24 +106,50 @@ export function QueueTable({
                     {isServing && patient.calledAt
                       ? new Date(Date.now() - patient.calledAt).toISOString().substr(14, 5)
                       : wait
-                      ? formatWaitRange(wait)
-                      : '—'}
+                        ? formatWaitRange(wait)
+                        : '—'}
                   </span>
                 </td>
                 <td className="py-3 text-right">
                   {patient.status === 'waiting' ? (
-                    <button
-                      onClick={() =>
-                        socket.emit('skip-token', {
-                          clinicId,
-                          token: patient.token,
-                          receptionistPin: getPin(),
-                        })
-                      }
-                      className="rounded-md px-3 py-1 text-xs font-medium text-charcoal/60 border border-charcoal/15 hover:border-charcoal/30 hover:text-charcoal transition-colors"
-                    >
-                      Skip
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      {onShowQR && (
+                        <button
+                          onClick={() => onShowQR(patient)}
+                          title="Show QR for rescan"
+                          className="rounded-md p-1.5 text-charcoal/70 hover:text-pulse-green-800 hover:bg-pulse-green-50 transition-colors"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <path d="M14 14h3v3h-3zM20 14h1M20 20h1M14 20h3" />
+                          </svg>
+                        </button>
+                      )}
+                      <button
+                        onClick={() =>
+                          socket.emit('skip-token', {
+                            clinicId,
+                            token: patient.token,
+                            receptionistPin: getPin(),
+                          })
+                        }
+                        className="rounded-md px-3 py-1 text-xs font-medium text-charcoal/60 border border-charcoal/15 hover:border-charcoal/30 hover:text-charcoal transition-colors"
+                      >
+                        Skip
+                      </button>
+                    </div>
                   ) : (
                     <span className="text-xs text-charcoal/45">serving</span>
                   )}

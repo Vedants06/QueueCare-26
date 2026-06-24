@@ -26,7 +26,7 @@ import { DuplicateWarning } from '@/components/receptionist/DuplicateWarning';
 import { ConsultWarning } from '@/components/receptionist/ConsultWarning';
 import { QRModal } from '@/components/receptionist/QRModal';
 import { ReinstatedBannerReceptionist } from '@/components/receptionist/ReinstatedBanner';
-import type { QueueError } from '@shared/types';
+import type { QueueError, Patient } from '@shared/types';
 
 const CLINIC_ID = 'default';
 const CLINIC_NAME = 'Default Clinic · Desk 1';
@@ -46,7 +46,7 @@ function SectionCard({
     <div className={`rounded-xl bg-white border border-charcoal/10 p-5 ${className || ''}`}>
       {title && (
         <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-base font-semibold text-charcoal">
+          <h2 className="text-base font-semibold text-charcoal">
             {title}
           </h2>
           {subtitle && (
@@ -70,6 +70,7 @@ function ReceptionistDashboard() {
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [errorToast, setErrorToast] = useState<string | null>(null);
+  const [qrPatient, setQrPatient] = useState<Patient | null>(null);
 
   useEffect(() => {
     initAudio();
@@ -138,7 +139,7 @@ function ReceptionistDashboard() {
                   height={28}
                   className="h-7 w-7"
                 />
-                                <span className="text-lg font-semibold text-charcoal">
+                <span className="text-lg font-semibold text-charcoal">
                   QueueCure
                 </span>
               </Link>
@@ -149,9 +150,8 @@ function ReceptionistDashboard() {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`status-dot ${
-                    isConnected ? 'bg-pulse-green-700 status-dot-pulse' : 'bg-charcoal/30'
-                  }`}
+                  className={`status-dot ${isConnected ? 'bg-pulse-green-700 status-dot-pulse' : 'bg-charcoal/30'
+                    }`}
                 />
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-charcoal/55 hidden sm:inline">
                   {isConnected ? 'Connected' : 'Offline'}
@@ -224,6 +224,7 @@ function ReceptionistDashboard() {
                   socket={socket}
                   clinicId={CLINIC_ID}
                   getPin={pinAuth.getPin}
+                  onShowQR={(patient) => setQrPatient(patient)}
                 />
               </SectionCard>
 
@@ -253,7 +254,7 @@ function ReceptionistDashboard() {
               </SectionCard>
 
               <div className="rounded-xl border border-signal-red-200 bg-signal-red-50/40 p-5">
-                                <h2 className="text-base font-semibold text-signal-red mb-3">
+                <h2 className="text-base font-semibold text-signal-red mb-3">
                   Danger zone
                 </h2>
                 <DangerZone
@@ -268,7 +269,11 @@ function ReceptionistDashboard() {
 
         {/* Overlays */}
         <ConsultWarning socket={socket} currentToken={state.currentToken} />
-        <QRModal socket={socket} />
+        <QRModal
+          socket={socket}
+          manualPatient={qrPatient}
+          onManualClose={() => setQrPatient(null)}
+        />
         <ReinstatedBannerReceptionist socket={socket} />
         <DuplicateWarning socket={socket} clinicId={CLINIC_ID} />
         <HistoryDrawer
