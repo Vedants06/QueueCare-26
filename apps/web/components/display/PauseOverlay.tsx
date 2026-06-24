@@ -15,14 +15,16 @@ export function PauseOverlay({ isPaused }: PauseOverlayProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-carbon/85"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#F2EFE8]/95 backdrop-blur-sm"
         >
           <div className="text-center">
-            <p className="text-5xl mb-4">⏸</p>
-            <p className="text-3xl font-semibold text-white mb-2">
+            <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-amber-alert-50 border-2 border-amber-alert-200 mb-6">
+              <span className="text-4xl">⏸</span>
+            </div>
+            <p className="text-4xl md:text-5xl font-bold text-charcoal mb-3">
               Queue Paused
             </p>
-            <p className="text-lg text-gray-400">
+            <p className="text-lg text-charcoal/60">
               Please wait
             </p>
           </div>

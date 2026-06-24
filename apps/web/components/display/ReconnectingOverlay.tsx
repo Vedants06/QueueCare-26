@@ -15,14 +15,13 @@ export function ReconnectingOverlay({ isDisconnected }: ReconnectingOverlayProps
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-carbon/90"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#F2EFE8]/95 backdrop-blur-sm"
         >
           <div className="text-center">
-            {/* Spinner */}
-            <div className="mb-4 inline-block">
-              <div className="h-10 w-10 rounded-full border-4 border-gray-600 border-t-clinic-blue animate-spin" />
+            <div className="mb-6 inline-block">
+              <div className="h-12 w-12 rounded-full border-4 border-charcoal/15 border-t-pulse-green-700 animate-spin" />
             </div>
-            <p className="text-xl font-medium text-white">
+            <p className="text-xl font-medium text-charcoal/70">
               Reconnecting...
             </p>
           </div>

@@ -12,35 +12,40 @@ interface QueueGridProps {
 
 const MAX_VISIBLE = 8;
 
+const LABELS = ['Next', '+1', '+2', '+3', '+4', '+5', '+6', '+7'];
+
 export function QueueGrid({ waitingPatients, getWaitEstimate, className }: QueueGridProps) {
   const visible = waitingPatients.slice(0, MAX_VISIBLE);
   const overflow = waitingPatients.length - MAX_VISIBLE;
 
   return (
     <div className={cn('flex flex-col', className)}>
-      <p className="text-sm uppercase tracking-[0.3em] text-gray-400 mb-4 font-medium">
+      <p className="text-sm md:text-base uppercase tracking-[0.3em] text-pulse-green-800 mb-6 font-semibold">
         Up Next
       </p>
 
       {visible.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">
-          No patients currently waiting
-        </p>
+        <div className="rounded-2xl bg-white/40 border border-charcoal/10 p-12 text-center">
+          <p className="text-charcoal/40 text-lg">
+            No patients currently waiting
+          </p>
+        </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {visible.map((patient) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+            {visible.map((patient, index) => (
               <DisplayTokenCard
                 key={patient.token}
                 token={patient.token}
                 priority={patient.priority}
                 waitEstimate={getWaitEstimate(patient.token)}
+                label={index < LABELS.length ? LABELS[index] : `+${index}`}
               />
             ))}
           </div>
 
           {overflow > 0 && (
-            <p className="text-center text-sm text-gray-400 mt-4">
+            <p className="text-center text-sm text-charcoal/55 mt-4 font-medium">
               +{overflow} more waiting
             </p>
           )}

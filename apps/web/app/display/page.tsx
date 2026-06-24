@@ -19,14 +19,12 @@ function DisplayPageContent() {
   const clinicId = 'default';
 
   const { socket, isConnected, updateTimestamp } = useSocket(clinicId);
-  const { state, waitingPatients, getWaitEstimate } = useQueueState(socket);
+  const { state, waitingPatients, servingPatient, getWaitEstimate } = useQueueState(socket);
 
-  // Initialize audio
   useEffect(() => {
     initAudio();
   }, []);
 
-  // Force state-sync on tab focus (critical for TV screens)
   usePageVisibility(
     useCallback(() => {
       socket.emit('join-clinic', { clinicId });
@@ -34,7 +32,6 @@ function DisplayPageContent() {
     }, [socket, clinicId, updateTimestamp])
   );
 
-  // Play chime on token-called
   useEffect(() => {
     const onTokenCalled = (payload: TokenCalledPayload) => {
       if (payload.isRecall) {
@@ -50,7 +47,6 @@ function DisplayPageContent() {
     };
   }, [socket]);
 
-  // Hide cursor for kiosk mode (only in production)
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       document.body.style.cursor = 'none';
@@ -63,8 +59,24 @@ function DisplayPageContent() {
   const isMinimal = mode === 'minimal';
 
   return (
-    <div className="min-h-screen bg-carbon text-white flex flex-col overflow-hidden select-none">
-      {/* Now Serving — always visible */}
+    <div className="min-h-screen bg-[#F2EFE8] flex flex-col overflow-hidden select-none">
+      {/* Status bar — subtle, top */}
+      <div className="px-8 pt-6 pb-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-pulse-green-700" />
+          <span className="text-sm font-semibold text-charcoal/80">
+            QueueCure
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="status-dot status-dot-pulse bg-pulse-green-700" />
+          <span className="text-xs font-semibold uppercase tracking-wider text-pulse-green-800">
+            Live
+          </span>
+        </div>
+      </div>
+
+      {/* Now Serving — large */}
       <div
         className={
           isMinimal
@@ -72,12 +84,15 @@ function DisplayPageContent() {
             : 'flex items-center justify-center h-[60vh]'
         }
       >
-        <NowServing currentToken={state.currentToken} />
+        <NowServing
+          currentToken={state.currentToken}
+          currentName={servingPatient?.name}
+        />
       </div>
 
       {/* Queue Grid — only in full mode */}
       {!isMinimal && (
-        <div className="h-[40vh] px-8 pb-6 flex flex-col">
+        <div className="h-[40vh] px-8 pb-8 flex flex-col">
           <QueueGrid
             waitingPatients={waitingPatients}
             getWaitEstimate={getWaitEstimate}
@@ -98,8 +113,8 @@ export default function DisplayPage() {
     <ErrorBoundary fallbackMessage="Display screen error. Please refresh.">
       <Suspense
         fallback={
-          <div className="min-h-screen bg-carbon flex items-center justify-center">
-            <p className="text-gray-500">Loading display...</p>
+          <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center">
+            <p className="text-charcoal/40">Loading display...</p>
           </div>
         }
       >

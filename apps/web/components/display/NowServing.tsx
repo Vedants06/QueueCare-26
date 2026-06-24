@@ -2,22 +2,21 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { TokenDisplay } from '@/components/shared/TokenDisplay';
 
 interface NowServingProps {
   currentToken: number | null;
+  currentName?: string;
   className?: string;
 }
 
-export function NowServing({ currentToken, className }: NowServingProps) {
+function formatToken(n: number): string {
+  return String(n).padStart(3, '0');
+}
+
+export function NowServing({ currentToken, currentName, className }: NowServingProps) {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center',
-        className
-      )}
-    >
-      <p className="text-lg uppercase tracking-[0.3em] text-gray-400 mb-4 font-medium">
+    <div className={cn('flex flex-col items-center justify-center', className)}>
+      <p className="text-base md:text-lg uppercase tracking-[0.3em] text-pulse-green-800 mb-6 font-semibold">
         Now Serving
       </p>
 
@@ -25,12 +24,20 @@ export function NowServing({ currentToken, className }: NowServingProps) {
         {currentToken !== null ? (
           <motion.div
             key={currentToken}
-            initial={{ x: 200, opacity: 0 }}
+            initial={{ x: 300, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -200, opacity: 0 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            exit={{ x: -300, opacity: 0 }}
+            transition={{ duration: 0.45, ease: 'easeInOut' }}
+            className="flex flex-col items-center"
           >
-            <TokenDisplay token={currentToken} size="display" className="text-white" />
+            <span className="font-mono text-[12rem] md:text-[16rem] lg:text-[20rem] font-bold leading-none tracking-tight text-charcoal">
+              {formatToken(currentToken)}
+            </span>
+            {currentName && (
+              <p className="text-3xl md:text-4xl lg:text-5xl font-medium text-charcoal/70 mt-4">
+                {currentName}
+              </p>
+            )}
           </motion.div>
         ) : (
           <motion.div
@@ -39,9 +46,13 @@ export function NowServing({ currentToken, className }: NowServingProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
+            className="text-center"
           >
-            <p className="text-2xl text-gray-500 font-medium">
+            <p className="text-3xl md:text-4xl text-charcoal/40 font-medium">
               Queue is clear
+            </p>
+            <p className="text-base text-charcoal/30 mt-3">
+              All patients have been seen
             </p>
           </motion.div>
         )}
