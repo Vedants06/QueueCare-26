@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { formatToken } from '@/lib/formatters';
 import type { TypedSocket } from '@/lib/socket';
 
 interface UndoBannerProps {
@@ -18,6 +17,10 @@ interface UndoBannerProps {
   className?: string;
 }
 
+function formatToken(n: number): string {
+  return String(n).padStart(3, '0');
+}
+
 export function UndoBanner({
   isVisible,
   calledToken,
@@ -31,10 +34,7 @@ export function UndoBanner({
   className,
 }: UndoBannerProps) {
   const handleUndo = () => {
-    socket.emit('undo-call', {
-      clinicId,
-      receptionistPin: getPin(),
-    });
+    socket.emit('undo-call', { clinicId, receptionistPin: getPin() });
     onDismiss();
   };
 
@@ -47,36 +47,31 @@ export function UndoBanner({
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
           className={cn(
-            'rounded-lg border border-clinic-blue-200 bg-clinic-blue-50 p-3',
+            'rounded-2xl border border-pulse-green-700/30 bg-pulse-green-50 p-3',
             className
           )}
         >
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-clinic-blue-700">
-              <span className="font-medium">↩ Undo</span>{' '}
+            <p className="text-sm text-pulse-green-800">
+              <span className="font-semibold">↩ Undo</span>{' '}
               — Called #{formatToken(calledToken)} {calledName}
             </p>
-
             <div className="flex items-center gap-2">
-              <span className="text-xs text-clinic-blue-500 font-mono">
+              <span className="text-xs text-pulse-green-700 font-mono font-semibold">
                 {secondsRemaining}s
               </span>
               <button
                 onClick={handleUndo}
-                className={cn(
-                  'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
-                  'bg-clinic-blue text-white hover:bg-clinic-blue-600'
-                )}
+                className="rounded-full px-3 py-1 text-xs font-semibold bg-pulse-green-800 text-white hover:bg-pulse-green-900 transition-colors"
               >
                 Undo
               </button>
             </div>
           </div>
 
-          {/* Progress bar */}
-          <div className="h-1 w-full rounded-full bg-clinic-blue-100 overflow-hidden">
+          <div className="h-1 w-full rounded-full bg-pulse-green-100 overflow-hidden">
             <div
-              className="h-full rounded-full bg-clinic-blue transition-all duration-100 ease-linear"
+              className="h-full rounded-full bg-pulse-green-700 transition-all duration-100 ease-linear"
               style={{ width: `${progress * 100}%` }}
             />
           </div>

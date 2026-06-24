@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useSocket } from '@/hooks/useSocket';
 import { useQueueState } from '@/hooks/useQueueState';
 import { useUndoCountdown } from '@/hooks/useUndoCountdown';
@@ -8,7 +10,6 @@ import { usePinAuth } from '@/hooks/usePinAuth';
 import { usePageVisibility } from '@/hooks/usePageVisibility';
 import { initAudio } from '@/lib/sounds';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
-import { Logo } from '@/components/shared/Logo';
 import { PinGate } from '@/components/receptionist/PinGate';
 import { AddPatientForm } from '@/components/receptionist/AddPatientForm';
 import { ServingCard } from '@/components/receptionist/ServingCard';
@@ -28,6 +29,37 @@ import { ReinstatedBannerReceptionist } from '@/components/receptionist/Reinstat
 import type { QueueError } from '@shared/types';
 
 const CLINIC_ID = 'default';
+const CLINIC_NAME = 'Default Clinic · Desk 1';
+
+function SectionCard({
+  title,
+  subtitle,
+  children,
+  className,
+}: {
+  title?: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`rounded-xl bg-white border border-charcoal/10 p-5 ${className || ''}`}>
+      {title && (
+        <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-base font-semibold text-charcoal">
+            {title}
+          </h2>
+          {subtitle && (
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-charcoal/45">
+              {subtitle}
+            </span>
+          )}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
 
 function ReceptionistDashboard() {
   const { socket, isConnected, updateTimestamp } = useSocket(CLINIC_ID);
@@ -37,15 +69,12 @@ function ReceptionistDashboard() {
   const pinAuth = usePinAuth(socket);
 
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [errorToast, setErrorToast] = useState<string | null>(null);
 
-  // Initialize audio
   useEffect(() => {
     initAudio();
   }, []);
 
-  // Force state-sync on tab focus
   usePageVisibility(
     useCallback(() => {
       socket.emit('join-clinic', { clinicId: CLINIC_ID });
@@ -53,12 +82,31 @@ function ReceptionistDashboard() {
     }, [socket, updateTimestamp])
   );
 
-  // Listen for queue errors and show as toast
+  // Spacebar = Call Next
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return;
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+      e.preventDefault();
+      if (!state.isPaused && waitingPatients.length > 0) {
+        socket.emit('call-next', { clinicId: CLINIC_ID, receptionistPin: pinAuth.getPin() });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
+  }, [socket, state.isPaused, waitingPatients.length, pinAuth]);
+
   useEffect(() => {
     const onError = (error: QueueError) => {
-      // Don't show unauthorized errors as toast — PinAuth handles those
       if (error.code === 'unauthorized') return;
-
       setErrorToast(error.message);
       setTimeout(() => setErrorToast(null), 4000);
     };
@@ -77,64 +125,64 @@ function ReceptionistDashboard() {
       attempts={pinAuth.attempts}
       onSubmit={pinAuth.submitPin}
     >
-      <div className="min-h-screen bg-slate-surface">
-        {/* ─── Header ──────────────────────────────────────── */}
-        <header className="sticky top-0 z-20 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
-          <div className="flex items-center justify-between px-4 py-3 max-w-screen-2xl mx-auto">
-            {/* Left: Logo + connection status */}
+      <div className="min-h-screen bg-[#F2EFE8]">
+        {/* Header */}
+        <header className="border-b border-charcoal/10 bg-[#F2EFE8]">
+          <div className="flex items-center justify-between px-6 py-4 max-w-screen-2xl mx-auto">
             <div className="flex items-center gap-3">
-              <Logo size="sm" />
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={`status-dot ${isConnected
-                      ? 'bg-pulse-green status-dot-pulse'
-                      : 'bg-gray-400'
-                    }`}
+              <Link href="/" className="flex items-center gap-2">
+                <Image
+                  src="/QueueCureLogo.png"
+                  alt="QueueCure"
+                  width={28}
+                  height={28}
+                  className="h-7 w-7"
                 />
-                <span className="text-xs text-text-muted hidden sm:inline">
-                  {isConnected ? 'Connected' : 'Disconnected'}
+                                <span className="text-lg font-semibold text-charcoal">
+                  QueueCure
                 </span>
-              </div>
+              </Link>
+              <span className="text-charcoal/30 mx-1">|</span>
+              <span className="text-sm text-charcoal/70">{CLINIC_NAME}</span>
             </div>
 
-            {/* Right: Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={`status-dot ${
+                    isConnected ? 'bg-pulse-green-700 status-dot-pulse' : 'bg-charcoal/30'
+                  }`}
+                />
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-charcoal/55 hidden sm:inline">
+                  {isConnected ? 'Connected' : 'Offline'}
+                </span>
+              </div>
               <PauseButton
                 socket={socket}
                 clinicId={CLINIC_ID}
                 getPin={pinAuth.getPin}
                 isPaused={state.isPaused}
               />
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="rounded-lg p-2 text-text-muted hover:text-charcoal hover:bg-gray-100 transition-colors"
-                title="Settings"
+              <Link
+                href="/"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-charcoal bg-white border border-charcoal/15 hover:border-charcoal/30 transition-colors"
               >
-                ⚙️
-              </button>
-              <button
-                onClick={() => setHistoryOpen(true)}
-                className="rounded-lg p-2 text-text-muted hover:text-charcoal hover:bg-gray-100 transition-colors"
-                title="Patient History"
-              >
-                📋
-              </button>
+                Exit
+              </Link>
             </div>
           </div>
         </header>
 
-        {/* ─── Main Content ─────────────────────────────────── */}
-        <div className="max-w-screen-2xl mx-auto px-4 py-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* Main Content */}
+        <div className="max-w-screen-2xl mx-auto px-6 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            {/* Left Column */}
+            <div className="lg:col-span-3 space-y-5">
+              <SectionCard title="Add patient" subtitle="Step 1">
+                <AddPatientForm socket={socket} clinicId={CLINIC_ID} />
+              </SectionCard>
 
-            {/* ─── Left Column: Actions ─────────────────────── */}
-            <div className="lg:col-span-3 space-y-4">
-              <AddPatientForm
-                socket={socket}
-                clinicId={CLINIC_ID}
-              />
-
-              <div className="border-t border-gray-200 pt-4">
+              <SectionCard title="Call next" subtitle="Step 2">
                 <CallNextButton
                   socket={socket}
                   clinicId={CLINIC_ID}
@@ -142,9 +190,8 @@ function ReceptionistDashboard() {
                   isPaused={state.isPaused}
                   hasWaiting={waitingPatients.length > 0}
                 />
-              </div>
+              </SectionCard>
 
-              {/* Undo Banner */}
               <UndoBanner
                 isVisible={undoCountdown.isUndoAvailable}
                 calledToken={undoCountdown.calledToken}
@@ -157,7 +204,7 @@ function ReceptionistDashboard() {
                 onDismiss={undoCountdown.clearCountdown}
               />
 
-              <div className="border-t border-gray-200 pt-4">
+              <SectionCard title="Now serving" subtitle={servingPatient ? 'Live' : ''}>
                 <ServingCard
                   patient={servingPatient}
                   currentToken={state.currentToken}
@@ -165,18 +212,20 @@ function ReceptionistDashboard() {
                   clinicId={CLINIC_ID}
                   getPin={pinAuth.getPin}
                 />
-              </div>
+              </SectionCard>
             </div>
 
-            {/* ─── Center Column: Queue ─────────────────────── */}
-            <div className="lg:col-span-6 space-y-4">
-              <QueueTable
-                queue={state.queue}
-                getWaitEstimate={getWaitEstimate}
-                socket={socket}
-                clinicId={CLINIC_ID}
-                getPin={pinAuth.getPin}
-              />
+            {/* Center Column */}
+            <div className="lg:col-span-6 space-y-5">
+              <SectionCard title="Queue" subtitle={`${waitingPatients.length} waiting`}>
+                <QueueTable
+                  queue={state.queue}
+                  getWaitEstimate={getWaitEstimate}
+                  socket={socket}
+                  clinicId={CLINIC_ID}
+                  getPin={pinAuth.getPin}
+                />
+              </SectionCard>
 
               <AbsentTray
                 absentPatients={state.absentPatients}
@@ -186,57 +235,48 @@ function ReceptionistDashboard() {
               />
             </div>
 
-            {/* ─── Right Column: Info ───────────────────────── */}
-            <div className="lg:col-span-3 space-y-4">
-              <AnalyticsStrip analytics={analytics} />
+            {/* Right Column */}
+            <div className="lg:col-span-3 space-y-5">
+              <SectionCard title="Today" subtitle="Live analytics">
+                <AnalyticsStrip analytics={analytics} />
+              </SectionCard>
 
-              {showSettings && (
+              <SectionCard title="Settings">
                 <SettingsPanel
                   socket={socket}
                   clinicId={CLINIC_ID}
                   getPin={pinAuth.getPin}
                   currentAvgTime={state.avgConsultTime}
                   sessionStartedAt={state.sessionStartedAt}
+                  onOpenHistory={() => setHistoryOpen(true)}
                 />
-              )}
+              </SectionCard>
 
-              <DangerZone
-                socket={socket}
-                clinicId={CLINIC_ID}
-                getPin={pinAuth.getPin}
-              />
+              <div className="rounded-xl border border-signal-red-200 bg-signal-red-50/40 p-5">
+                                <h2 className="text-base font-semibold text-signal-red mb-3">
+                  Danger zone
+                </h2>
+                <DangerZone
+                  socket={socket}
+                  clinicId={CLINIC_ID}
+                  getPin={pinAuth.getPin}
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ─── Floating / Overlay Elements ──────────────────── */}
-
-        {/* Consultation warning toast */}
-        <ConsultWarning
-          socket={socket}
-          currentToken={state.currentToken}
-        />
-
-        {/* QR code modal (triggered by patient-added) */}
+        {/* Overlays */}
+        <ConsultWarning socket={socket} currentToken={state.currentToken} />
         <QRModal socket={socket} />
-
-        {/* Reinstated banner toast */}
         <ReinstatedBannerReceptionist socket={socket} />
-
-        {/* Duplicate warning dialog */}
-        <DuplicateWarning
-          socket={socket}
-          clinicId={CLINIC_ID}
-        />
-
-        {/* History drawer */}
+        <DuplicateWarning socket={socket} clinicId={CLINIC_ID} />
         <HistoryDrawer
           isOpen={historyOpen}
           onClose={() => setHistoryOpen(false)}
           clinicId={CLINIC_ID}
         />
 
-        {/* Error toast */}
         {errorToast && (
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-sm">
             <div className="rounded-lg border border-signal-red-200 bg-signal-red-50 px-4 py-3 shadow-lg">

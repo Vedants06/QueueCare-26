@@ -22,8 +22,6 @@ export function AddPatientForm({ socket, clinicId, className }: AddPatientFormPr
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-
-      // Validate
       const trimmedName = name.trim();
       if (trimmedName.length === 0) {
         setNameError('Patient name is required');
@@ -34,7 +32,6 @@ export function AddPatientForm({ socket, clinicId, className }: AddPatientFormPr
       setNameError('');
       setIsSubmitting(true);
 
-      // Emit add-patient (no PIN required)
       socket.emit('add-patient', {
         clinicId,
         name: trimmedName,
@@ -42,7 +39,6 @@ export function AddPatientForm({ socket, clinicId, className }: AddPatientFormPr
         priority,
       });
 
-      // Clear form and re-enable after 2 seconds
       setName('');
       setPhone('');
       setPriority(false);
@@ -50,96 +46,66 @@ export function AddPatientForm({ socket, clinicId, className }: AddPatientFormPr
       setTimeout(() => {
         setIsSubmitting(false);
         nameInputRef.current?.focus();
-      }, 2000);
+      }, 1500);
     },
     [name, phone, priority, socket, clinicId]
   );
 
   return (
     <form onSubmit={handleSubmit} className={cn('space-y-3', className)}>
-      <h3 className="text-sm font-semibold text-charcoal uppercase tracking-wide">
-        Add Patient
-      </h3>
-
-      {/* Name */}
-      <div>
-        <input
-          ref={nameInputRef}
-          type="text"
-          placeholder="Patient name"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            if (nameError) setNameError('');
-          }}
-          className={cn(
-            'w-full rounded-lg border bg-white px-3 py-2 text-sm',
-            'placeholder:text-gray-400 focus:outline-none focus:ring-2',
-            nameError
-              ? 'border-signal-red focus:ring-signal-red/30'
-              : 'border-gray-200 focus:ring-clinic-blue/30 focus:border-clinic-blue'
-          )}
-          disabled={isSubmitting}
-        />
-        {nameError && (
-          <p className="mt-1 text-xs text-signal-red">{nameError}</p>
+      <input
+        ref={nameInputRef}
+        type="text"
+        placeholder="Full name"
+        value={name}
+        onChange={(e) => {
+          setName(e.target.value);
+          if (nameError) setNameError('');
+        }}
+        className={cn(
+          'w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm',
+          'placeholder:text-charcoal/35 focus:outline-none',
+          nameError
+            ? 'border-signal-red-300 focus:border-signal-red'
+            : 'border-charcoal/15 focus:border-pulse-green-700'
         )}
-      </div>
+        disabled={isSubmitting}
+      />
+      {nameError && (
+        <p className="text-xs text-signal-red-700 -mt-1">{nameError}</p>
+      )}
 
-      {/* Phone */}
-      <div>
+      <input
+        type="tel"
+        placeholder="Phone (optional)"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="w-full rounded-lg border border-charcoal/15 bg-white px-3.5 py-2.5 text-sm placeholder:text-charcoal/35 focus:outline-none focus:border-pulse-green-700"
+        disabled={isSubmitting}
+      />
+
+      <label className="flex items-center gap-2 cursor-pointer select-none py-1">
         <input
-          type="tel"
-          placeholder="Phone (optional)"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className={cn(
-            'w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm',
-            'placeholder:text-gray-400 focus:outline-none focus:ring-2',
-            'focus:ring-clinic-blue/30 focus:border-clinic-blue'
-          )}
+          type="checkbox"
+          checked={priority}
+          onChange={(e) => setPriority(e.target.checked)}
           disabled={isSubmitting}
+          className="h-4 w-4 rounded border-charcoal/20 text-pulse-green-800 focus:ring-pulse-green-700/30"
         />
-      </div>
-
-      {/* Priority toggle */}
-      <label className="flex items-center gap-2 cursor-pointer select-none">
-        <button
-          type="button"
-          role="switch"
-          aria-checked={priority}
-          onClick={() => setPriority(!priority)}
-          disabled={isSubmitting}
-          className={cn(
-            'relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clinic-blue/30',
-            priority ? 'bg-amber-alert' : 'bg-gray-200'
-          )}
-        >
-          <span
-            className={cn(
-              'pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform',
-              priority ? 'translate-x-4' : 'translate-x-0'
-            )}
-          />
-        </button>
-        <span className="text-sm text-charcoal">
-          ⚡ Priority
-        </span>
+        <span className="text-sm text-charcoal">Mark as priority</span>
       </label>
 
-      {/* Submit button */}
       <button
         type="submit"
         disabled={isSubmitting}
         className={cn(
-          'w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-colors',
+          'w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-colors',
           isSubmitting
-            ? 'bg-gray-300 cursor-not-allowed'
-            : 'bg-clinic-blue hover:bg-clinic-blue-600 active:bg-clinic-blue-700'
+            ? 'bg-charcoal/20 cursor-not-allowed'
+            : 'bg-charcoal hover:bg-charcoal/85'
         )}
       >
-        {isSubmitting ? 'Adding...' : 'Add Patient'}
+        {isSubmitting ? 'Adding...' : 'Add to queue'}
       </button>
     </form>
   );

@@ -22,45 +22,30 @@ export function CallNextButton({
 }: CallNextButtonProps) {
   const isDisabled = isPaused || !hasWaiting;
 
-  const handleClick = () => {
-    if (isDisabled) return;
-
-    socket.emit('call-next', {
-      clinicId,
-      receptionistPin: getPin(),
-    });
-  };
-
-  // Determine tooltip text
-  let tooltip = '';
-  if (isPaused) {
-    tooltip = 'Queue is paused — resume to call next';
-  } else if (!hasWaiting) {
-    tooltip = 'No patients waiting in queue';
-  }
-
   return (
-    <div className={cn('relative group', className)}>
+    <div className={cn('text-center', className)}>
       <button
-        onClick={handleClick}
+        onClick={() => {
+          if (isDisabled) return;
+          socket.emit('call-next', { clinicId, receptionistPin: getPin() });
+        }}
         disabled={isDisabled}
         className={cn(
-          'w-full rounded-xl px-6 py-4 text-lg font-semibold text-white transition-all',
+          'w-full rounded-lg px-6 py-5 text-xl font-semibold transition-all',
           isDisabled
-            ? 'bg-gray-300 cursor-not-allowed'
-            : 'bg-clinic-blue hover:bg-clinic-blue-600 active:bg-clinic-blue-700 shadow-md hover:shadow-lg active:shadow-sm'
+            ? 'bg-charcoal/10 text-charcoal/30 cursor-not-allowed'
+            : 'bg-pulse-green-800 text-white hover:bg-pulse-green-900 shadow-sm hover:shadow-md'
         )}
       >
-        {isPaused ? '⏸ Queue Paused' : 'Call Next Patient'}
+        {isPaused ? 'Queue paused' : 'Call next'}
       </button>
-
-      {/* Tooltip on hover when disabled */}
-      {isDisabled && tooltip && (
-        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-1.5 rounded-lg bg-charcoal text-white text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-          {tooltip}
-          <div className="absolute left-1/2 -translate-x-1/2 bottom-full w-2 h-2 bg-charcoal rotate-45" />
-        </div>
-      )}
+      <p className="text-xs text-charcoal/50 mt-2">
+        {isDisabled
+          ? !hasWaiting
+            ? 'No patients waiting'
+            : 'Resume queue to continue'
+          : 'Or press the spacebar'}
+      </p>
     </div>
   );
 }

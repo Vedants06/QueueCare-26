@@ -11,76 +11,38 @@ interface DangerZoneProps {
   className?: string;
 }
 
-type ResetState = 'idle' | 'confirming';
-
 export function DangerZone({ socket, clinicId, getPin, className }: DangerZoneProps) {
-  const [resetState, setResetState] = useState<ResetState>('idle');
-
-  const handleFirstClick = useCallback(() => {
-    setResetState('confirming');
-  }, []);
+  const [confirming, setConfirming] = useState(false);
 
   const handleConfirm = useCallback(() => {
-    socket.emit('reset-queue', {
-      clinicId,
-      receptionistPin: getPin(),
-    });
-    setResetState('idle');
+    socket.emit('reset-queue', { clinicId, receptionistPin: getPin() });
+    setConfirming(false);
   }, [socket, clinicId, getPin]);
 
-  const handleCancel = useCallback(() => {
-    setResetState('idle');
-  }, []);
-
   return (
-    <div
-      className={cn(
-        'rounded-lg border p-4',
-        resetState === 'confirming'
-          ? 'border-signal-red bg-signal-red-50'
-          : 'border-gray-200 bg-white',
-        className
-      )}
-    >
-      <h3 className="text-xs font-semibold text-signal-red uppercase tracking-wide mb-2">
-        Danger Zone
-      </h3>
-
-      <p className="text-xs text-text-muted mb-3">
-        This will clear all patients and restart token numbering from 1.
-        Absent patients will be permanently skipped.
+    <div className={cn('', className)}>
+      <p className="text-xs text-charcoal/55 mb-4">
+        Resetting clears the queue and the absent tray, and starts a new session.
       </p>
 
-      {resetState === 'idle' && (
+      {!confirming ? (
         <button
-          onClick={handleFirstClick}
-          className={cn(
-            'w-full rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-            'border border-signal-red text-signal-red',
-            'hover:bg-signal-red-50 active:bg-signal-red-100'
-          )}
+          onClick={() => setConfirming(true)}
+          className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold border border-signal-red text-signal-red hover:bg-signal-red-50 transition-colors"
         >
-          Reset Queue &amp; Tokens
+          Reset queue
         </button>
-      )}
-
-      {resetState === 'confirming' && (
+      ) : (
         <div className="space-y-2">
           <button
             onClick={handleConfirm}
-            className={cn(
-              'w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition-colors',
-              'bg-signal-red hover:bg-signal-red-600 active:bg-signal-red-700'
-            )}
+            className="w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-white bg-signal-red hover:bg-signal-red-600 transition-colors"
           >
-            ⚠️ Click again to confirm reset
+            ⚠ Confirm reset
           </button>
           <button
-            onClick={handleCancel}
-            className={cn(
-              'w-full rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-              'bg-white text-charcoal border border-gray-200 hover:bg-gray-50'
-            )}
+            onClick={() => setConfirming(false)}
+            className="w-full rounded-lg px-4 py-2 text-sm font-medium bg-white text-charcoal border border-charcoal/15 hover:border-charcoal/30 transition-colors"
           >
             Cancel
           </button>
