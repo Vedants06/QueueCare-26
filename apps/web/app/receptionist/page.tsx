@@ -86,11 +86,10 @@ function ReceptionistDashboard() {
               <Logo size="sm" />
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`status-dot ${
-                    isConnected
+                  className={`status-dot ${isConnected
                       ? 'bg-pulse-green status-dot-pulse'
                       : 'bg-gray-400'
-                  }`}
+                    }`}
                 />
                 <span className="text-xs text-text-muted hidden sm:inline">
                   {isConnected ? 'Connected' : 'Disconnected'}
@@ -161,6 +160,7 @@ function ReceptionistDashboard() {
               <div className="border-t border-gray-200 pt-4">
                 <ServingCard
                   patient={servingPatient}
+                  currentToken={state.currentToken}
                   socket={socket}
                   clinicId={CLINIC_ID}
                   getPin={pinAuth.getPin}

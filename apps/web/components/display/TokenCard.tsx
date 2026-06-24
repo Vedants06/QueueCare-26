@@ -37,26 +37,23 @@ export function DisplayTokenCard({
         className
       )}
     >
-      {/* Label (Next / +1 / +2) */}
       {label && (
         <p className="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-pulse-green-800/70 mb-2">
           {label}
         </p>
       )}
 
-      {/* Token number */}
-      <p className="font-mono text-4xl md:text-5xl font-bold leading-none text-charcoal mb-2">
+      {/* Token in serif */}
+      <p className="font-serif text-5xl md:text-6xl font-bold leading-none text-charcoal mb-2">
         {formatToken(token)}
       </p>
 
-      {/* Wait estimate */}
       {waitEstimate && (
         <p className="text-sm text-charcoal/60">
           {formatWaitRange(waitEstimate)}
         </p>
       )}
 
-      {/* Priority indicator */}
       {priority && (
         <p className="text-xs font-semibold text-amber-alert-700 mt-2">
           ⚡ Priority

@@ -16,7 +16,7 @@ function formatToken(n: number): string {
 export function NowServing({ currentToken, currentName, className }: NowServingProps) {
   return (
     <div className={cn('flex flex-col items-center justify-center', className)}>
-      <p className="text-base md:text-lg uppercase tracking-[0.3em] text-pulse-green-800 mb-6 font-semibold">
+      <p className="text-base md:text-lg uppercase tracking-[0.3em] text-pulse-green-800 mb-8 font-semibold">
         Now Serving
       </p>
 
@@ -30,11 +30,14 @@ export function NowServing({ currentToken, currentName, className }: NowServingP
             transition={{ duration: 0.45, ease: 'easeInOut' }}
             className="flex flex-col items-center"
           >
-            <span className="font-mono text-[12rem] md:text-[16rem] lg:text-[20rem] font-bold leading-none tracking-tight text-charcoal">
+            {/* Token number in elegant serif */}
+            <span className="font-serif text-[14rem] md:text-[18rem] lg:text-[22rem] font-bold leading-[0.85] tracking-tight text-charcoal">
               {formatToken(currentToken)}
             </span>
+
+            {/* Patient name in matching serif */}
             {currentName && (
-              <p className="text-3xl md:text-4xl lg:text-5xl font-medium text-charcoal/70 mt-4">
+              <p className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium italic text-pulse-green-800 mt-6">
                 {currentName}
               </p>
             )}
@@ -48,10 +51,10 @@ export function NowServing({ currentToken, currentName, className }: NowServingP
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <p className="text-3xl md:text-4xl text-charcoal/40 font-medium">
+            <p className="font-serif text-4xl md:text-5xl text-charcoal/40 font-medium italic">
               Queue is clear
             </p>
-            <p className="text-base text-charcoal/30 mt-3">
+            <p className="text-base text-charcoal/30 mt-4">
               All patients have been seen
             </p>
           </motion.div>
