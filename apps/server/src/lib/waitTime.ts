@@ -1,4 +1,4 @@
-import type { WaitEstimate } from '../../../../shared/types';
+import type { WaitEstimate } from '../types';
 
 export function computeWaitEstimate(
   position: number,

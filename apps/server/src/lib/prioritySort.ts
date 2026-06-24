@@ -1,4 +1,4 @@
-import type { Patient } from '../../../../shared/types';
+import type { Patient } from '../types';
 
 /**
  * Stable sort for the active queue.

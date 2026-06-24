@@ -1,4 +1,4 @@
-import type { QueueState } from '../../../../shared/types';
+import type { QueueState } from '../types';
 
 /**
  * In-memory store for active queue state.
