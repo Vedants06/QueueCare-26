@@ -39,6 +39,7 @@ export function QRModal({ socket, className }: QRModalProps) {
     }
 
     const url = `${APP_URL}/patient?token=${patient.token}&clinic=${patient.clinicId}&access=${patient.accessToken}`;
+    console.log('[QR DEBUG]', { url, patientAccessToken: patient.accessToken, fullPatient: patient });
 
     QRCode.toString(url, {
       type: 'svg',
@@ -80,6 +81,10 @@ export function QRModal({ socket, className }: QRModalProps) {
         )}
         <p className="text-xs text-text-muted mb-4">
           {formatDateTime(new Date(patient.addedAt))}
+        </p>
+
+        <p className="text-xs text-charcoal/60 break-all px-4 mb-3">
+          {`${APP_URL}/patient?token=${patient.token}&clinic=${patient.clinicId}&access=${patient.accessToken}`}
         </p>
 
         {/* QR Code */}
