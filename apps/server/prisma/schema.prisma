@@ -27,7 +27,8 @@ model PatientHistory {
   token         Int
   name          String
   phone         String?
-  accessToken   String?  
+  accessToken   String? 
+  notes         String? 
   priority      Boolean   @default(false)
   status        String
   addedAt       DateTime

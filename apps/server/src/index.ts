@@ -25,6 +25,8 @@ import { healthRouter } from './routes/health';
 import { historyRouter } from './routes/history';
 import { sessionRouter } from './routes/session';
 import { analyticsRouter } from './routes/analytics';
+import { historyExportRouter } from './routes/historyExport';
+
 
 console.log('[BOOT] All imports complete');
 
@@ -48,6 +50,7 @@ async function main(): Promise<void> {
 
   app.use(healthRouter);
   app.use(historyRouter);
+  app.use(historyExportRouter);
   app.use(sessionRouter);
   app.use(analyticsRouter);
 

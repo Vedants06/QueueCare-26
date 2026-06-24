@@ -22,6 +22,7 @@ export interface Patient {
   reinstatedAt?: number;
   absentCount: number;
   accessToken: string;
+  notes?: string;
 }
 
 // ─── Queue State ────────────────────────────────────────────────
