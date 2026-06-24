@@ -207,9 +207,13 @@ export default function HomePage() {
               <h3 className="text-lg font-semibold text-charcoal mb-1">
                 Waiting Room TV
               </h3>
-              <p className="text-sm text-charcoal/65 mb-4 leading-relaxed">
-                Full-screen kiosk. Token transitions animate. No names shown —
-                patient privacy by design.
+              <p className="text-sm text-charcoal/65 mb-3 leading-relaxed">
+                Full-screen kiosk. Toggle between full grid and compact &quot;now
+                serving&quot; view from inside.
+              </p>
+              <p className="text-[11px] text-charcoal/45 mb-4 leading-relaxed">
+                Tip: press <span className="font-mono font-semibold">M</span> to switch
+                modes
               </p>
               <p className="text-sm font-semibold text-pulse-green-800 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                 Open display
