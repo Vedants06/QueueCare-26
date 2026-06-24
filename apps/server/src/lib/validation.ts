@@ -12,10 +12,25 @@ export const joinClinicSchema = z.object({
   clinicId: clinicIdField,
 });
 
+// Indian mobile number: 10 digits starting with 6, 7, 8, or 9
+// Accepts optional +91 or 91 prefix which will be stripped client-side
+const phoneSchema = z
+  .string()
+  .optional()
+  .refine(
+    (val) => {
+      if (!val || val.trim() === '') return true; // empty is OK (optional)
+      return /^[6-9]\d{9}$/.test(val.trim());
+    },
+    {
+      message: 'Phone must be a 10-digit Indian mobile starting with 6, 7, 8, or 9',
+    }
+  );
+
 export const addPatientSchema = z.object({
   clinicId: clinicIdField,
   name: z.string().min(1, 'Patient name is required').max(100, 'Name too long'),
-  phone: z.string().max(20, 'Phone number too long').optional(),
+  phone: phoneSchema,
   priority: z.boolean().optional(),
 });
 
