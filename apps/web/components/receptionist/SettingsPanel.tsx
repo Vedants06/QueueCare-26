@@ -10,7 +10,6 @@ interface SettingsPanelProps {
   getPin: () => string;
   currentAvgTime: number;
   sessionStartedAt: number;
-  onOpenHistory: () => void;
   className?: string;
 }
 
@@ -19,9 +18,9 @@ export function SettingsPanel({
   clinicId,
   getPin,
   currentAvgTime,
-  onOpenHistory,
   className,
 }: SettingsPanelProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [avgTime, setAvgTime] = useState(String(currentAvgTime));
   const [isSaving, setIsSaving] = useState(false);
 
@@ -35,33 +34,59 @@ export function SettingsPanel({
   };
 
   return (
-    <div className={cn('space-y-4', className)}>
-      <div>
-        <label className="block text-[10px] font-semibold uppercase tracking-wider text-charcoal/45 mb-2">
-          Fallback Avg (min)
-        </label>
-        <input
-          type="number"
-          min="1"
-          max="120"
-          step="0.5"
-          value={avgTime}
-          onChange={(e) => setAvgTime(e.target.value)}
-          onBlur={handleSetAvgTime}
-          onKeyDown={(e) => e.key === 'Enter' && handleSetAvgTime()}
-          className="w-full rounded-lg border border-charcoal/15 bg-white px-3 py-2 text-sm focus:outline-none focus:border-pulse-green-700"
-        />
-        <p className="mt-2 text-xs text-charcoal/55">
-          Used until 3 clean consultations exist.
-        </p>
-      </div>
-
+    <div className={cn('rounded-xl bg-white border border-charcoal/10 overflow-hidden', className)}>
+      {/* Header — clickable to toggle */}
       <button
-        onClick={onOpenHistory}
-        className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-charcoal bg-white border border-charcoal/15 hover:border-charcoal/30 transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-[#F2EFE8]/40 transition-colors"
       >
-        Open patient history
+        <h2 className="text-base font-semibold text-charcoal">Settings</h2>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={cn(
+            'text-charcoal/55 transition-transform',
+            isOpen && 'rotate-180'
+          )}
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </button>
+
+      {/* Content — collapsible */}
+      {isOpen && (
+        <div className="px-5 pb-5 pt-1 border-t border-charcoal/10 space-y-4">
+          <div>
+            <label className="block text-[10px] font-semibold uppercase tracking-wider text-charcoal/45 mb-2">
+              Fallback Avg (min)
+            </label>
+            <input
+              type="number"
+              min="1"
+              max="120"
+              step="0.5"
+              value={avgTime}
+              onChange={(e) => setAvgTime(e.target.value)}
+              onBlur={handleSetAvgTime}
+              onKeyDown={(e) => e.key === 'Enter' && handleSetAvgTime()}
+              className="w-full rounded-lg border border-charcoal/15 bg-white px-3 py-2 text-sm focus:outline-none focus:border-pulse-green-700"
+            />
+            <p className="mt-2 text-xs text-charcoal/55">
+              Used until 3 clean consultations exist.
+            </p>
+            {isSaving && (
+              <p className="mt-1 text-xs text-pulse-green-800">✓ Saved</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

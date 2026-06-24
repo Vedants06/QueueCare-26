@@ -27,6 +27,7 @@ import { ConsultWarning } from '@/components/receptionist/ConsultWarning';
 import { QRModal } from '@/components/receptionist/QRModal';
 import { ReinstatedBannerReceptionist } from '@/components/receptionist/ReinstatedBanner';
 import type { QueueError, Patient } from '@shared/types';
+import { HistoryCard } from '@/components/receptionist/HistoryCard';
 
 const CLINIC_ID = 'default';
 const CLINIC_NAME = 'Default Clinic · Desk 1';
@@ -242,16 +243,15 @@ function ReceptionistDashboard() {
                 <AnalyticsStrip analytics={analytics} />
               </SectionCard>
 
-              <SectionCard title="Settings">
-                <SettingsPanel
-                  socket={socket}
-                  clinicId={CLINIC_ID}
-                  getPin={pinAuth.getPin}
-                  currentAvgTime={state.avgConsultTime}
-                  sessionStartedAt={state.sessionStartedAt}
-                  onOpenHistory={() => setHistoryOpen(true)}
-                />
-              </SectionCard>
+              <SettingsPanel
+                socket={socket}
+                clinicId={CLINIC_ID}
+                getPin={pinAuth.getPin}
+                currentAvgTime={state.avgConsultTime}
+                sessionStartedAt={state.sessionStartedAt}
+              />
+
+              <HistoryCard onOpen={() => setHistoryOpen(true)} />
 
               <div className="rounded-xl border border-signal-red-200 bg-signal-red-50/40 p-5">
                 <h2 className="text-base font-semibold text-signal-red mb-3">
