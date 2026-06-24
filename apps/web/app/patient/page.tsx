@@ -2,17 +2,18 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, useCallback, Suspense } from 'react';
+import Image from 'next/image';
 import { useSocket } from '@/hooks/useSocket';
 import { useQueueState } from '@/hooks/useQueueState';
 import { usePageVisibility } from '@/hooks/usePageVisibility';
 import { initAudio, playChime } from '@/lib/sounds';
-import { Logo } from '@/components/shared/Logo';
 import { TokenCard } from '@/components/patient/TokenCard';
 import { PositionCard } from '@/components/patient/PositionCard';
 import { LiveIndicator } from '@/components/patient/LiveIndicator';
 import { AbsentNotice } from '@/components/patient/AbsentNotice';
 import { ReinstatedBanner } from '@/components/patient/ReinstatedBanner';
 import { PausedBanner } from '@/components/patient/PausedBanner';
+import { DemoStatesPreview } from '@/components/patient/DemoStatesPreview';
 import { SessionExpiredBanner } from '@/components/patient/SessionExpiredBanner';
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import type { PatientReinstatedPayload } from '@shared/types';
@@ -31,12 +32,10 @@ function PatientPageContent() {
   const [showReinstated, setShowReinstated] = useState(false);
   const [previousPosition, setPreviousPosition] = useState<number>(0);
 
-  // Initialize audio on first interaction
   useEffect(() => {
     initAudio();
   }, []);
 
-  // Force state-sync on tab focus
   usePageVisibility(
     useCallback(() => {
       socket.emit('join-clinic', { clinicId });
@@ -44,12 +43,10 @@ function PatientPageContent() {
     }, [socket, clinicId, updateTimestamp])
   );
 
-  // Listen for reinstatement
   useEffect(() => {
     const onReinstated = (payload: PatientReinstatedPayload) => {
       if (token && payload.token === token) {
         setShowReinstated(true);
-        // Auto-hide is handled by ReinstatedBanner component
         setTimeout(() => setShowReinstated(false), 6000);
       }
     };
@@ -60,7 +57,6 @@ function PatientPageContent() {
     };
   }, [socket, token]);
 
-  // Play chime when position becomes 1
   const patient = token ? findPatient(token) : null;
   const position = token ? getPatientPosition(token) : 0;
   const waitEstimate = token ? getWaitEstimate(token) : null;
@@ -72,14 +68,16 @@ function PatientPageContent() {
     setPreviousPosition(position);
   }, [position, previousPosition]);
 
-  // ─── Error: no token in URL ────────────────────────────
   if (!token || isNaN(token)) {
     return (
-      <div className="min-h-screen bg-slate-surface flex items-center justify-center p-4">
-        <div className="qc-card max-w-sm text-center">
-          <Logo size="lg" className="justify-center mb-4" />
-          <p className="text-charcoal font-medium mb-2">No token provided</p>
-          <p className="text-sm text-text-muted">
+      <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center p-4">
+        <div className="rounded-xl bg-white border border-charcoal/10 p-6 max-w-sm text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Image src="/QueueCureLogo.png" alt="" width={32} height={32} className="h-8 w-8" />
+            <span className="text-lg font-semibold text-charcoal">QueueCure</span>
+          </div>
+          <p className="text-sm font-semibold text-charcoal mb-2">No token provided</p>
+          <p className="text-xs text-charcoal/55">
             Scan the QR code from your token slip to track your queue position.
           </p>
         </div>
@@ -87,29 +85,32 @@ function PatientPageContent() {
     );
   }
 
-  // ─── Check session expiry ──────────────────────────────
   const isSessionExpired =
     patient &&
     state.sessionStartedAt > 0 &&
     patient.addedAt < state.sessionStartedAt;
 
-  // ─── Render ────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-slate-surface flex flex-col items-center px-4 py-6">
+    <div className="min-h-screen bg-[#F2EFE8]">
       {/* Header */}
-      <Logo size="sm" className="mb-6" />
+      <header className="border-b border-charcoal/10 bg-[#F2EFE8]">
+        <div className="max-w-md mx-auto px-5 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Image src="/QueueCureLogo.png" alt="" width={24} height={24} className="h-6 w-6" />
+            <span className="text-base font-semibold text-charcoal">QueueCure</span>
+          </div>
+          <LiveIndicator isConnected={isConnected} lastUpdated={lastUpdated} />
+        </div>
+      </header>
 
-      <div className="w-full max-w-sm space-y-4">
-        {/* Session expired — replaces everything */}
-        {isSessionExpired && <SessionExpiredBanner />}
-
-        {/* Normal flow */}
-        {!isSessionExpired && (
+      {/* Main */}
+      <div className="max-w-md mx-auto px-5 py-6 space-y-4">
+        {isSessionExpired ? (
+          <SessionExpiredBanner />
+        ) : (
           <>
-            {/* Reinstated banner */}
             <ReinstatedBanner show={showReinstated} />
 
-            {/* Token card */}
             {patient ? (
               <TokenCard
                 token={patient.token}
@@ -117,45 +118,65 @@ function PatientPageContent() {
                 status={patient.status}
               />
             ) : (
-              <div className="qc-card text-center">
-                <p className="text-text-muted">
+              <div className="rounded-xl bg-white border border-charcoal/10 p-6 text-center">
+                <p className="text-sm text-charcoal/55">
                   Looking for token #{token}...
                 </p>
               </div>
             )}
 
-            {/* Absent notice */}
             {patient?.status === 'absent' && <AbsentNotice />}
 
-            {/* Position and wait (only when waiting) */}
-            {patient?.status === 'waiting' && position > 0 && (
-              <PositionCard position={position} waitEstimate={waitEstimate} />
-            )}
-
-            {/* Serving state */}
-            {patient?.status === 'serving' && (
-              <div className="qc-card text-center border-pulse-green bg-pulse-green-50">
-                <p className="text-xl font-semibold text-pulse-green-700">
-                  You are being seen now
+                        {/* You're next — when position is 1 and someone is currently being served */}
+            {patient?.status === 'waiting' && position === 1 && state.currentToken !== null && (
+              <div className="rounded-xl bg-charcoal text-white p-5 text-center">
+                <p className="text-base font-semibold mb-1">
+                  You&apos;re next — please head towards the consulting room
                 </p>
               </div>
             )}
 
-            {/* Paused banner */}
+            {/* Normal waiting position card */}
+            {patient?.status === 'waiting' && position > 0 && (
+              <PositionCard position={position} waitEstimate={waitEstimate} />
+            )}
+
+            {/* Being seen */}
+            {patient?.status === 'serving' && (
+              <div className="rounded-xl bg-pulse-green-50 border border-pulse-green-300 p-5 text-center">
+                <p className="text-base font-semibold text-pulse-green-800">
+                  You&apos;re being seen now
+                </p>
+              </div>
+            )}
+
             {state.isPaused && patient?.status === 'waiting' && <PausedBanner />}
+
+            {/* While you wait */}
+            {patient?.status === 'waiting' && (
+              <div className="rounded-xl bg-white/60 border border-charcoal/10 p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-charcoal/45 mb-3">
+                  While you wait
+                </p>
+                <ul className="space-y-2 text-sm text-charcoal/75">
+                  <li>· Stay within earshot of the waiting room.</li>
+                  <li>· This page updates automatically — no need to refresh.</li>
+                  <li>
+                    · If you step out and miss your turn, return to the front desk
+                    and you&apos;ll be reinstated.
+                  </li>
+                </ul>
+              </div>
+            )}
           </>
         )}
 
-        {/* Live indicator — always visible */}
-        <LiveIndicator
-          isConnected={isConnected}
-          lastUpdated={lastUpdated}
-          className="mt-6"
-        />
+        {/* Demo states preview — collapsible */}
+        {!isSessionExpired && <DemoStatesPreview />}
 
         {/* Footer */}
-        <p className="text-center text-xs text-text-muted mt-4">
-          Token #{token} — QueueCure
+        <p className="text-center text-xs text-charcoal/40 pt-4">
+          Clinic {clinicId} · token #{String(token).padStart(3, '0')}
         </p>
       </div>
     </div>
@@ -167,8 +188,8 @@ export default function PatientPage() {
     <ErrorBoundary fallbackMessage="Unable to load queue tracker. Please refresh.">
       <Suspense
         fallback={
-          <div className="min-h-screen bg-slate-surface flex items-center justify-center">
-            <p className="text-text-muted">Loading...</p>
+          <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center">
+            <p className="text-charcoal/40">Loading...</p>
           </div>
         }
       >

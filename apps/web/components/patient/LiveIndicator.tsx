@@ -11,17 +11,19 @@ interface LiveIndicatorProps {
 
 export function LiveIndicator({ isConnected, lastUpdated, className }: LiveIndicatorProps) {
   return (
-    <div className={cn('flex items-center justify-center gap-2 text-sm', className)}>
+    <div className={cn('flex items-center justify-center gap-2 text-xs', className)}>
       {isConnected ? (
         <>
-          <span className="status-dot status-dot-pulse bg-pulse-green" />
-          <span className="text-pulse-green-700 font-medium">Live</span>
+          <span className="status-dot status-dot-pulse bg-pulse-green-700" />
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pulse-green-800">
+            Live
+          </span>
         </>
       ) : (
         <>
-          <span className="status-dot bg-gray-400" />
-          <span className="text-text-muted">
-            Disconnected — {formatTimeAgo(lastUpdated)}
+          <span className="status-dot bg-charcoal/30" />
+          <span className="text-charcoal/55">
+            Disconnected · updated {formatTimeAgo(lastUpdated)}
           </span>
         </>
       )}

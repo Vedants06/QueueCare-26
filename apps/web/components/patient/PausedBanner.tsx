@@ -10,7 +10,7 @@ export function PausedBanner({ className }: PausedBannerProps) {
   return (
     <div
       className={cn(
-        'rounded-lg border border-amber-alert-200 bg-amber-alert-50 p-3 text-center',
+        'rounded-xl border border-amber-alert-300 bg-amber-alert-50 p-4 text-center',
         className
       )}
     >
