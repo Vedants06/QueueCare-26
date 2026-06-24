@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, Suspense } from 'react';
 import { useSocket } from '@/hooks/useSocket';
+import Link from 'next/link';
 import { useQueueState } from '@/hooks/useQueueState';
 import { usePageVisibility } from '@/hooks/usePageVisibility';
 import { initAudio, playChime, playDoubleChime } from '@/lib/sounds';
@@ -62,12 +63,28 @@ function DisplayPageContent() {
     <div className="min-h-screen bg-[#F2EFE8] flex flex-col overflow-hidden select-none">
       {/* Status bar — subtle, top */}
       <div className="px-8 pt-6 pb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-2.5 w-2.5 rounded-full bg-pulse-green-700" />
-          <span className="text-sm font-semibold text-charcoal/80">
-            QueueCure
-          </span>
-        </div>
+        <Link
+          href="/"
+          className="flex items-center gap-2 group transition-opacity hover:opacity-70"
+          title="Back to home"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-charcoal/55 group-hover:text-charcoal transition-colors"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span className="text-sm font-semibold text-charcoal/80">QueueCure</span>
+        </Link>
+
         <div className="flex items-center gap-2">
           <span className="status-dot status-dot-pulse bg-pulse-green-700" />
           <span className="text-xs font-semibold uppercase tracking-wider text-pulse-green-800">
