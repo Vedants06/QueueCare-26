@@ -13,7 +13,7 @@ import { computeWaitEstimate, isOutlier } from '../lib/waitTime';
 import { getOrCreateSessionId } from '../db/session';
 import { writePatientHistory } from '../db/history';
 import { buildAnalytics } from '../lib/analyticsHelper';
-import { writeConsultDuration} from '../db/consultHistory';
+import { writeConsultDuration } from '../db/consultHistory';
 
 type TypedSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
 type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
@@ -64,7 +64,8 @@ export async function handleCallNext(
   const { clinicId, receptionistPin } = validation.data;
 
   // Step 2: Validate PIN
-  if (!validatePin(receptionistPin)) {
+  // Accept either receptionist or doctor PIN
+  if (!validatePin(receptionistPin) && !validatePin(receptionistPin, 'doctor')) {
     socket.emit('queue-error', {
       code: 'unauthorized',
       message: 'Invalid receptionist PIN',
@@ -190,11 +191,11 @@ export async function handleCallNext(
     const estimatedWait =
       waitingAfterCall.length > 0
         ? computeWaitEstimate(
-            1,
-            state.consultHistory,
-            state.avgConsultTime,
-            0
-          )
+          1,
+          state.consultHistory,
+          state.avgConsultTime,
+          0
+        )
         : null;
 
     // Step 13: Broadcast to room

@@ -1,18 +1,20 @@
 /**
- * Validates the receptionist PIN against the server environment variable.
+ * Validates the PIN against the appropriate role's environment variable.
  *
- * PIN is a 4-digit string stored only in process.env.RECEPTIONIST_PIN.
- * Never stored in DB. Never broadcast to clients.
+ * Roles:
+ *   - 'receptionist' → RECEPTIONIST_PIN
+ *   - 'doctor'       → DOCTOR_PIN
  *
- * Upgrade path for production:
- *   Replace with JWT + clinic-specific accounts.
- *   One account per receptionist with admin role for clinic owner.
+ * Backward-compatible: default role is 'receptionist'.
  */
-export function validatePin(pin: string): boolean {
-  const serverPin = process.env.RECEPTIONIST_PIN;
+export type Role = 'receptionist' | 'doctor';
+
+export function validatePin(pin: string, role: Role = 'receptionist'): boolean {
+  const envVar = role === 'doctor' ? 'DOCTOR_PIN' : 'RECEPTIONIST_PIN';
+  const serverPin = process.env[envVar];
 
   if (!serverPin) {
-    console.warn('[AUTH] RECEPTIONIST_PIN not set in environment. All PINs rejected.');
+    console.warn(`[AUTH] ${envVar} not set. All ${role} PINs rejected.`);
     return false;
   }
 

@@ -49,7 +49,7 @@ export async function handleMarkAbsent(
   const { clinicId, token, receptionistPin } = validation.data;
 
   // Step 2: Validate PIN
-  if (!validatePin(receptionistPin)) {
+  if (!validatePin(receptionistPin) && !validatePin(receptionistPin, 'doctor')) {
     socket.emit('queue-error', {
       code: 'unauthorized',
       message: 'Invalid receptionist PIN',

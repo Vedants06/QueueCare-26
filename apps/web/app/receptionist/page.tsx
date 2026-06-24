@@ -67,7 +67,7 @@ function ReceptionistDashboard() {
   const { state, analytics, waitingPatients, servingPatient, getWaitEstimate } =
     useQueueState(socket);
   const undoCountdown = useUndoCountdown(socket);
-  const pinAuth = usePinAuth(socket);
+  const pinAuth = usePinAuth(socket, 'receptionist', CLINIC_ID);
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [errorToast, setErrorToast] = useState<string | null>(null);

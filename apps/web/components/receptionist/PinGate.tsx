@@ -12,6 +12,8 @@ interface PinGateProps {
   attempts: number;
   onSubmit: (pin: string) => boolean;
   children: React.ReactNode;
+  demoPin?: string;
+  roleName?: string;
 }
 
 export function PinGate({
@@ -21,6 +23,8 @@ export function PinGate({
   attempts,
   onSubmit,
   children,
+  demoPin = '1234',
+  roleName = 'Receptionist',
 }: PinGateProps) {
   const [digits, setDigits] = useState(['', '', '', '']);
   const [isShaking, setIsShaking] = useState(false);
@@ -32,6 +36,12 @@ export function PinGate({
       inputRefs.current[0]?.focus();
     }
   }, [isAuthenticated, isInCooldown]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowUnlock(true);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (attempts > 0) {
@@ -61,8 +71,7 @@ export function PinGate({
       if (digit && index === 3) {
         const pin = newDigits.join('');
         if (pin.length === 4) {
-          const success = onSubmit(pin);
-          if (success) setShowUnlock(true);
+          onSubmit(pin);
         }
       }
     },
@@ -84,8 +93,7 @@ export function PinGate({
       const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
       if (pasted.length === 4) {
         setDigits(pasted.split(''));
-        const success = onSubmit(pasted);
-        if (success) setShowUnlock(true);
+        onSubmit(pasted);
       }
     },
     [onSubmit]
@@ -138,7 +146,7 @@ export function PinGate({
             </div>
 
             <h2 className="text-base font-semibold text-charcoal text-center mb-6">
-              Enter Receptionist PIN
+              Enter {roleName} PIN
             </h2>
 
             {isInCooldown ? (
@@ -204,7 +212,7 @@ export function PinGate({
                   </p>
                   <p className="text-sm text-center text-charcoal/65">
                     PIN ·{' '}
-                    <span className="font-mono font-bold text-charcoal">1234</span>
+                    <span className="font-mono font-bold text-charcoal">{demoPin}</span>
                   </p>
                 </div>
               </>

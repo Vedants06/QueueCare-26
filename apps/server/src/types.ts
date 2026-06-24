@@ -214,6 +214,24 @@ export interface QueueUpdatePayload {
   analytics: AnalyticsData;
 }
 
+export interface SetNotesPayload {
+  clinicId: string;
+  token: number;
+  notes: string;
+  doctorPin: string;
+}
+
+export interface VerifyPinPayload {
+  clinicId: string;
+  pin: string;
+  role: 'receptionist' | 'doctor';
+}
+
+export interface VerifyPinResultPayload {
+  valid: boolean;
+  role: 'receptionist' | 'doctor';
+}
+
 // ─── Socket Event Maps ─────────────────────────────────────────
 
 export interface ClientToServerEvents {
@@ -229,6 +247,8 @@ export interface ClientToServerEvents {
   'pause-queue': (payload: PauseQueuePayload) => void;
   'reset-queue': (payload: ResetQueuePayload) => void;
   'set-avg-time': (payload: SetAvgTimePayload) => void;
+  'set-notes': (payload: SetNotesPayload) => void;
+  'verify-pin': (payload: VerifyPinPayload) => void;
 }
 
 export interface ServerToClientEvents {
@@ -245,4 +265,6 @@ export interface ServerToClientEvents {
   'consultation-warning': (payload: ConsultationWarningPayload) => void;
   'priority-alert': (payload: PriorityAlertPayload) => void;
   'queue-error': (payload: QueueError) => void;
+  'verify-pin-result': (payload: VerifyPinResultPayload) => void;
 }
+

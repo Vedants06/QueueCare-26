@@ -12,6 +12,8 @@ import { handleRecallToken } from './handlers/recallToken';
 import { handlePauseQueue } from './handlers/pauseQueue';
 import { handleResetQueue } from './handlers/resetQueue';
 import { handleSetAvgTime } from './handlers/setAvgTime';
+import { handleSetNotes } from './handlers/setNotes';
+import { handleVerifyPin } from './handlers/verifyPin';
 
 type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -74,6 +76,18 @@ export function registerSocketHandlers(io: TypedServer): void {
     socket.on('skip-token', (payload) => {
       handleSkipToken(io, socket, payload).catch((err) =>
         console.error(`[SOCKET] Error in skip-token from ${socket.id}:`, err)
+      );
+    });
+
+    socket.on('set-notes', (payload) => {
+      handleSetNotes(io, socket, payload).catch((err) =>
+        console.error(`[SOCKET] Error in set-notes from ${socket.id}:`, err)
+      );
+    });
+
+    socket.on('verify-pin', (payload) => {
+      handleVerifyPin(io, socket, payload).catch((err) =>
+        console.error(`[SOCKET] Error in verify-pin from ${socket.id}:`, err)
       );
     });
 

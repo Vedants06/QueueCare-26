@@ -174,7 +174,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Receptionist */}
             <Link
               href="/receptionist"
@@ -213,6 +213,27 @@ export default function HomePage() {
               </p>
               <p className="text-sm font-semibold text-pulse-green-800 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                 Open display
+                <span>→</span>
+              </p>
+            </Link>
+
+            {/* Doctor */}
+            <Link
+              href="/doctor"
+              className="group rounded-2xl bg-white/80 p-6 border border-charcoal/10 hover:border-pulse-green-700/40 hover:bg-white hover:shadow-md transition-all"
+            >
+              <div className="mb-4 h-12 w-12 rounded-xl bg-amber-alert text-charcoal flex items-center justify-center text-xl">
+                ⚕
+              </div>
+              <h3 className="text-lg font-semibold text-charcoal mb-1">
+                Doctor
+              </h3>
+              <p className="text-sm text-charcoal/65 mb-4 leading-relaxed">
+                See current patient, write notes, call next. Focused view, no
+                queue management distractions.
+              </p>
+              <p className="text-sm font-semibold text-pulse-green-800 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                Open doctor console
                 <span>→</span>
               </p>
             </Link>

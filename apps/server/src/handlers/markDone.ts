@@ -37,7 +37,7 @@ export async function handleMarkDone(
 
   const { clinicId, token, receptionistPin } = validation.data;
 
-  if (!validatePin(receptionistPin)) {
+  if (!validatePin(receptionistPin) && !validatePin(receptionistPin, 'doctor')) {
     console.log('[MARK-DONE] PIN validation failed');
     socket.emit('queue-error', {
       code: 'unauthorized',
@@ -124,6 +124,7 @@ export async function handleMarkDone(
     // Try DB writes but don't crash if DB is offline
     try {
       const sessionId = await getOrCreateSessionId(clinicId, state.avgConsultTime);
+      console.log(`[MARK-DONE] Writing to DB with notes:`, patient.notes);
       writePatientHistory(patient, sessionId, 'done').catch((err) =>
         console.error('[HANDLER] Error writing mark-done patient history:', err)
       );

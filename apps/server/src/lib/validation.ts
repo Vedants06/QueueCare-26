@@ -72,6 +72,13 @@ export const resetQueueSchema = z.object({
   receptionistPin: pinField,
 });
 
+export const setNotesSchema = z.object({
+  clinicId: clinicIdField,
+  token: tokenField,
+  notes: z.string().max(2000, 'Notes too long (max 2000 chars)'),
+  doctorPin: pinField,
+});
+
 export const setAvgTimeSchema = z.object({
   clinicId: clinicIdField,
   minutes: z
@@ -79,6 +86,12 @@ export const setAvgTimeSchema = z.object({
     .positive('Average time must be positive')
     .max(120, 'Average time cannot exceed 120 minutes'),
   receptionistPin: pinField,
+});
+
+export const verifyPinSchema = z.object({
+  clinicId: clinicIdField,
+  pin: pinField,
+  role: z.enum(['receptionist', 'doctor']),
 });
 
 // ─── Validation helper ──────────────────────────────────────────
