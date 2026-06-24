@@ -48,15 +48,6 @@ function DisplayPageContent() {
     };
   }, [socket]);
 
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      document.body.style.cursor = 'none';
-      return () => {
-        document.body.style.cursor = '';
-      };
-    }
-  }, []);
-
   const isMinimal = mode === 'minimal';
 
   return (
