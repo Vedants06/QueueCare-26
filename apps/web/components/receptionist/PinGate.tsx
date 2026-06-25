@@ -132,6 +132,12 @@ export function PinGate({
           key="lock"
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F2EFE8] px-6"
         >
+          {/* Cold start hint */}
+          <div className="max-w-sm w-full mb-3 px-3 py-2 rounded-lg bg-amber-alert-50 border border-amber-alert-200">
+            <p className="text-[11px] text-amber-alert-700 text-center leading-relaxed">
+              First connection may take ~30s if backend was idle
+            </p>
+          </div>
           <div className="rounded-2xl bg-white border border-charcoal/10 p-8 max-w-sm w-full">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-6">

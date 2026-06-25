@@ -54,10 +54,17 @@ export default function HomePage() {
             </h1>
 
             {/* Sub */}
-            <p className="text-lg text-charcoal/70 mb-10 max-w-xl leading-relaxed">
+            <p className="text-lg text-charcoal/70 mb-8 max-w-xl leading-relaxed">
               Three screens, one mutex, zero refresh. Patients see live position,
               doctors stay on time, receptionists stop juggling paper.
             </p>
+
+            {/* Cold start notice */}
+            <div className="mb-8 inline-flex items-start gap-2 rounded-lg bg-amber-alert-50 border border-amber-alert-200 px-3.5 py-2.5 max-w-lg">
+              <p className="text-xs text-amber-alert-700 leading-relaxed">
+                <span className="font-semibold">Backend hosted on Render free tier.</span> Cold starts take ~30s after 15 min of inactivity. All subsequent requests are real-time.
+              </p>
+            </div>
 
             <div className="flex flex-wrap gap-3 mb-10">
               <Link
