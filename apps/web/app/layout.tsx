@@ -22,8 +22,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'QueueCure',
-  description: 'Real-time clinic queue management — replace paper tokens with live digital queues',
+  title: 'QueueCure — Real-time clinic queue',
+  description: 'Replace paper tokens with a live digital queue. Receptionist, doctor, TV, and patient phones in sync under 200ms.',
 };
 
 export default function RootLayout({
