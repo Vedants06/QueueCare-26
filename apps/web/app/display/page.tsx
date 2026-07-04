@@ -75,14 +75,14 @@ function DisplayPageContent() {
     };
   }, [socket]);
 
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      document.body.style.cursor = 'none';
-      return () => {
-        document.body.style.cursor = '';
-      };
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (process.env.NODE_ENV === 'production') {
+  //     document.body.style.cursor = 'none';
+  //     return () => {
+  //       document.body.style.cursor = '';
+  //     };
+  //   }
+  // }, []);
 
   // Toggle mode + persist + update URL
   const toggleMode = useCallback(() => {
