@@ -233,6 +233,11 @@ export interface VerifyPinResultPayload {
   role: 'receptionist' | 'doctor';
 }
 
+export interface SeedDemoDataPayload {
+  clinicId: string;
+  receptionistPin: string;
+}
+
 // ─── Socket Event Maps (for type-safe Socket.IO) ───────────────
 
 export interface ClientToServerEvents {
@@ -250,6 +255,7 @@ export interface ClientToServerEvents {
   'set-avg-time': (payload: SetAvgTimePayload) => void;
   'set-notes': (payload: SetNotesPayload) => void;
   'verify-pin': (payload: VerifyPinPayload) => void;
+  'seed-demo-data': (payload: SeedDemoDataPayload) => void;
 }
 
 export interface ServerToClientEvents {

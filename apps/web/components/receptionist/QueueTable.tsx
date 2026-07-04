@@ -40,11 +40,42 @@ export function QueueTable({
   const completed = queue.filter((p) => p.status === 'done' || p.status === 'skipped');
 
   if (active.length === 0) {
+    const handleLoadDemo = () => {
+      socket.emit('seed-demo-data', {
+        clinicId,
+        receptionistPin: getPin(),
+      });
+    };
+
     return (
-      <div className={cn('text-center py-16', className)}>
-        <p className="text-sm text-charcoal/45 mb-1">No patients in queue</p>
-        <p className="text-xs text-charcoal/35">
-          Add a patient using the form on the left
+      <div className={cn('text-center py-14', className)}>
+        <p className="text-base font-medium text-charcoal/70 mb-1">
+          No patients in queue
+        </p>
+        <p className="text-xs text-charcoal/45 mb-6">
+          Add a patient using the form on the left, or load demo data to try the app
+        </p>
+        <button
+          onClick={handleLoadDemo}
+          className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold bg-pulse-green-800 text-white hover:bg-pulse-green-900 transition-colors shadow-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Load demo data
+        </button>
+        <p className="text-[10px] text-charcoal/55 mt-3">
+          Adds 5 waiting patients + 1 in absent tray
         </p>
       </div>
     );

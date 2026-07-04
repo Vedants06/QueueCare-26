@@ -109,6 +109,11 @@ export const verifyPinSchema = z.object({
   role: z.enum(['receptionist', 'doctor']),
 });
 
+export const seedDemoDataSchema = z.object({
+  clinicId: clinicIdField,
+  receptionistPin: pinField,
+});
+
 // ─── Validation helper ──────────────────────────────────────────
 
 export type ValidationResult<T> =

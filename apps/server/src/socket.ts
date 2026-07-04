@@ -14,6 +14,7 @@ import { handleResetQueue } from './handlers/resetQueue';
 import { handleSetAvgTime } from './handlers/setAvgTime';
 import { handleSetNotes } from './handlers/setNotes';
 import { handleVerifyPin } from './handlers/verifyPin';
+import { handleSeedDemoData } from './handlers/seedDemoData';
 
 type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>;
 
@@ -88,6 +89,12 @@ export function registerSocketHandlers(io: TypedServer): void {
     socket.on('verify-pin', (payload) => {
       handleVerifyPin(io, socket, payload).catch((err) =>
         console.error(`[SOCKET] Error in verify-pin from ${socket.id}:`, err)
+      );
+    });
+
+    socket.on('seed-demo-data', (payload) => {
+      handleSeedDemoData(io, socket, payload).catch((err) =>
+        console.error(`[SOCKET] Error in seed-demo-data from ${socket.id}:`, err)
       );
     });
 
