@@ -8,26 +8,13 @@ Built for Queue Cure '26 by Wooble Software
 
 [Live Demo](https://queue-care-26-web.vercel.app) · [Socket Architecture](./docs/SOCKET_DIAGRAM.md) · [Engineering Decisions](./docs/THOUGHT_PROCESS.md)
 
+<br />
+
+![Score](https://img.shields.io/badge/Queue_Cure_'26-Shortlisted_87%2F100-22A06B?style=for-the-badge)
+
 </div>
 
 ---
-## Recognition
-
-**Shortlisted submission — 87/100**
-
-> "One of the strongest submissions in this hackathon from both a product
-> and engineering perspective... excellent product thinking, high
-> engineering quality, well-reasoned architectural decisions, and one of
-> the most complete implementations among the reviewed candidates."
->
-> — Official hackathon reviewer
-
-**Scores:**
-- Problem Understanding: 5/5
-- Depth: 5/5
-- Execution Quality: 4/5
-- Originality: 4/5
-- Communication: 4/5
 
 ## Table of Contents
 
@@ -35,6 +22,7 @@ Built for Queue Cure '26 by Wooble Software
 - [What QueueCure Does](#what-queuecure-does)
 - [Screens](#screens)
 - [Live Demo](#live-demo)
+- [Recognition](#recognition)
 - [Feature Summary](#feature-summary)
 - [Tech Stack](#tech-stack)
 - [What We Deliberately Did Not Use](#what-we-deliberately-did-not-use)
@@ -74,6 +62,25 @@ Patient scans a QR code and sees their position and estimated wait. Receptionist
 | **Receptionist PIN** | `1234` |
 | **Doctor PIN** | `5678` |
 | **Default clinic ID** | `default` |
+
+## Recognition
+
+**Shortlisted submission — 87/100**
+
+| Criteria | Score |
+|---|---|
+| Problem Understanding | 5/5 |
+| Depth | 5/5 |
+| Execution Quality | 4/5 |
+| Originality | 4/5 |
+| Communication | 4/5 |
+
+> "One of the strongest submissions in this hackathon from both a product
+> and engineering perspective... excellent product thinking, high
+> engineering quality, well-reasoned architectural decisions, and one of
+> the most complete implementations among the reviewed candidates."
+>
+> — Hackathon reviewer
 
 ## Feature Summary
 
