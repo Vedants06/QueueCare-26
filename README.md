@@ -11,6 +11,23 @@ Built for Queue Cure '26 by Wooble Software
 </div>
 
 ---
+## Recognition
+
+**Shortlisted submission — 87/100**
+
+> "One of the strongest submissions in this hackathon from both a product
+> and engineering perspective... excellent product thinking, high
+> engineering quality, well-reasoned architectural decisions, and one of
+> the most complete implementations among the reviewed candidates."
+>
+> — Official hackathon reviewer
+
+**Scores:**
+- Problem Understanding: 5/5
+- Depth: 5/5
+- Execution Quality: 4/5
+- Originality: 4/5
+- Communication: 4/5
 
 ## Table of Contents
 
